@@ -1,0 +1,196 @@
+import { Brand } from '../brand/brand';
+import type {
+  ContentCategory,
+  WritingLength,
+  WritingTone,
+} from '../types/models';
+
+export const fa = {
+  brand: {
+    name: Brand.name,
+    slogan: Brand.slogan.fa,
+    sloganEn: Brand.slogan.en,
+    tagline: Brand.tagline.fa,
+  },
+
+  tabs: {
+    home: 'خانه',
+    arsenal: 'زرادخانه',
+    creations: 'نوشته‌های من',
+  },
+
+  common: {
+    save: 'ثبت در دفتر',
+    share: 'به اشتراک بگذار',
+    export: 'خروجی بگیر',
+    edit: 'ویرایش',
+    search: 'جست‌وجو',
+    settings: 'تنظیمات',
+    preview: 'پیش‌نمایش',
+    createNew: 'آفرینش تازه',
+    write: 'کتابت کن',
+    chooseTemplate: 'قالب برگزین',
+    copy: 'رونوشت',
+    delete: 'حذف',
+    duplicate: 'تکثیر',
+    rename: 'نام‌گذاری',
+    cancel: 'انصراف',
+    confirm: 'تأیید',
+    close: 'بستن',
+    back: 'بازگشت',
+    clear: 'پاک کردن',
+    reset: 'بازنشانی',
+    done: 'انجام شد',
+    loading: 'در حال آماده‌سازی…',
+    error: 'خطایی رخ داد',
+    success: 'انجام شد',
+    retry: 'تلاش دوباره',
+    openInEditor: 'گشودن در کتابت',
+    openInPoster: 'گشودن در قالب',
+    favourite: 'نشان‌کردن',
+    unfavourite: 'برداشتن نشان',
+    empty: 'هنوز چیزی نیست',
+    required: 'این بخش لازم است',
+  },
+
+  home: {
+    arsenalPreview: 'نگاهی به زرادخانه',
+    recentCreations: 'آفرینش‌های تازه',
+    seeAll: 'همه',
+    emptyRecentTitle: 'دفتر هنوز خالی است',
+    emptyRecentBody:
+      'با کتابت یا برگزیدن قالب، نخستین نوشته یا پوستر خود را بیافرینید.',
+    continueEdit: 'ادامهٔ ویرایش',
+  },
+
+  arsenal: {
+    title: 'زرادخانه',
+    subtitle: 'گنجینهٔ واژه‌ها و پیام‌ها',
+    searchPlaceholder: 'جست‌وجو در زرادخانه…',
+    allCategories: 'همه',
+    emptySearch: 'چیزی با این جست‌وجو یافت نشد.',
+    useInWrite: 'کتابت با این متن',
+    useInPoster: 'ساخت پوستر',
+    copied: 'متن رونوشت شد',
+  },
+
+  categories: {
+    mihan: 'میهن',
+    hambastegi: 'همبستگی',
+    paydari: 'پایداری',
+    omid: 'امید',
+    sepas: 'سپاسگزاری',
+    yadbud: 'یادبود',
+    ayande: 'آینده‌سازی',
+    custom: 'سفارشی',
+  } satisfies Record<ContentCategory | 'custom', string>,
+
+  write: {
+    title: 'کتابت',
+    topic: 'موضوع',
+    topicPlaceholder: 'دربارهٔ چه می‌نویسید؟',
+    context: 'نکات و زمینه',
+    contextPlaceholder: 'نکات کلیدی، مخاطب، یا جزئیات…',
+    body: 'متن',
+    bodyPlaceholder: 'اینجا بنویسید…',
+    tone: 'آهنگ بیان',
+    length: 'درازا',
+    generate: 'تولید متن',
+    generating: 'در حال کتابت…',
+    saveDraft: 'ثبت پیش‌نویس',
+    saved: 'در دفتر ثبت شد',
+    openPoster: 'گشودن در قالب',
+    clearConfirm: 'متن فعلی پاک شود؟',
+    localFallbackNotice:
+      'ارتباط با سرویس کتابت برقرار نشد. متن از گنجینهٔ محلی فراهم شد.',
+    noEndpointNotice:
+      'سرویس کتابت پیکربندی نشده است. از پیشنهاد محلی استفاده می‌شود.',
+    generateError: 'تولید متن ممکن نشد. دوباره بیازمایید یا خود بنویسید.',
+    titlePlaceholder: 'عنوان نوشته',
+  },
+
+  tones: {
+    epic: 'حماسی',
+    formal: 'رسمی',
+    emotional: 'احساسی',
+    literary: 'ادبی',
+    punchy: 'کوتاه و کوبنده',
+    motivational: 'انگیزشی',
+  } satisfies Record<WritingTone, string>,
+
+  lengths: {
+    short: 'کوتاه',
+    medium: 'متوسط',
+    long: 'بلند',
+  } satisfies Record<WritingLength, string>,
+
+  poster: {
+    title: 'قالب‌ها',
+    editorTitle: 'ویرایش پوستر',
+    selectTemplate: 'برگزیدن قالب',
+    headline: 'سرخط',
+    supporting: 'متن همراه',
+    body: 'متن اصلی',
+    signature: 'امضا / انتساب',
+    showTitle: 'نمایش عنوان',
+    showSignature: 'نمایش امضا',
+    alignment: 'چینش متن',
+    fontSize: 'اندازهٔ متن',
+    background: 'پس‌زمینه',
+    textColor: 'رنگ متن',
+    exportSuccess: 'تصویر پوستر آماده شد',
+    exportError: 'خروجی گرفتن ممکن نشد',
+    shareError: 'اشتراک‌گذاری ممکن نشد',
+    permissionDenied:
+      'دسترسی به حافظه داده نشد. می‌توانید از اشتراک‌گذاری استفاده کنید.',
+    saveProject: 'ثبت پروژه',
+    saved: 'پروژه ثبت شد',
+    exporting: 'در حال ساخت تصویر…',
+    alignRight: 'راست',
+    alignCenter: 'وسط',
+    alignLeft: 'چپ',
+  },
+
+  creations: {
+    title: 'نوشته‌های من',
+    drafts: 'پیش‌نویس‌ها',
+    messages: 'پیام‌ها',
+    posters: 'پوسترها',
+    favourites: 'نشان‌شده‌ها',
+    all: 'همه',
+    searchPlaceholder: 'جست‌وجو در نوشته‌ها…',
+    emptyTitle: 'هنوز آفرینشی ثبت نشده',
+    emptyBody: 'از خانه آغاز کنید: کتابت کنید یا قالبی برگزینید.',
+    deleteConfirm: 'این مورد برای همیشه حذف شود؟',
+    renamed: 'نام تازه ثبت شد',
+    duplicated: 'نسخهٔ تازه ساخته شد',
+    deleted: 'حذف شد',
+  },
+
+  settings: {
+    title: 'تنظیمات',
+    appearance: 'نمای ظاهری',
+    themeDark: 'تاریک',
+    themeLight: 'روشن',
+    writingDefaults: 'پیش‌فرض کتابت',
+    exportQuality: 'کیفیت خروجی',
+    qualityStandard: 'استاندارد',
+    qualityHigh: 'بالا',
+    about: 'درباره',
+    aboutBody:
+      'Must Rise زرادخانهٔ دیجیتال واژه‌ها و بیان بصری است؛ برای بیان غرور ملی، همبستگی، پایداری، سپاس و امید.',
+    privacy: 'حریم خصوصی',
+    privacyBody:
+      'محتوای شما روی دستگاه می‌ماند. کتابت هوشمند اختیاری است و بدون حساب اجباری کار می‌کند.',
+    version: 'نسخه',
+  },
+
+  errors: {
+    storage: 'ذخیره‌سازی با مشکل روبه‌رو شد',
+    network: 'ارتباط برقرار نشد',
+    invalidInput: 'ورودی معتبر نیست',
+    notFound: 'مورد یافت نشد',
+  },
+} as const;
+
+export type FaStrings = typeof fa;

@@ -1,0 +1,50 @@
+# Must Rise — required dependencies
+# Run from project root after base Expo TypeScript scaffold is ready.
+# Prefer Expo-compatible versions via: npx expo install <packages>
+
+# --- Core (usually from create-expo-app blank-typescript) ---
+expo
+expo-status-bar
+react
+react-native
+typescript
+@types/react
+
+# --- Navigation ---
+@react-navigation/native
+@react-navigation/bottom-tabs
+@react-navigation/native-stack
+react-native-screens
+react-native-safe-area-context
+
+# --- Persistence ---
+@react-native-async-storage/async-storage
+
+# --- Icons ---
+@expo/vector-icons
+
+# --- Clipboard ---
+expo-clipboard
+
+# --- Poster export / media / share ---
+expo-file-system
+expo-media-library
+expo-sharing
+react-native-view-shot
+
+# --- App config helpers ---
+expo-constants
+
+# ------------------------------------------------------------
+# Recommended one-liner (Expo SDK project):
+#
+#   npx expo install @react-navigation/native @react-navigation/bottom-tabs @react-navigation/native-stack react-native-screens react-native-safe-area-context @react-native-async-storage/async-storage @expo/vector-icons expo-clipboard expo-file-system expo-media-library expo-sharing expo-constants react-native-view-shot
+#
+# Optional AI endpoint (no package required — uses fetch):
+#   Set EXPO_PUBLIC_AI_ENDPOINT in .env / app config.
+#   Never put API keys in the mobile client.
+# ------------------------------------------------------------
+
+# App permissions to declare in app.json when packaging:
+# - android.permissions: WRITE_EXTERNAL_STORAGE / READ_MEDIA_IMAGES (as required by Expo Media Library)
+# - ios.infoPlist.NSPhotoLibraryAddUsageDescription for saving posters
