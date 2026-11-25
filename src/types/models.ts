@@ -1,41 +1,41 @@
 export type ContentCategory =
-  | 'mihan'
-  | 'hambastegi'
-  | 'paydari'
-  | 'omid'
-  | 'sepas'
-  | 'yadbud'
-  | 'ayande';
+  | "mihan"
+  | "hambastegi"
+  | "paydari"
+  | "omid"
+  | "sepas"
+  | "yadbud"
+  | "ayande";
 
-export type ContentSource = 'arsenal' | 'user' | 'ai' | 'local-fallback';
+export type ContentSource = "arsenal" | "user" | "ai" | "local-fallback";
 
 export type WritingTone =
-  | 'epic'
-  | 'formal'
-  | 'emotional'
-  | 'literary'
-  | 'punchy'
-  | 'motivational';
+  | "epic"
+  | "formal"
+  | "emotional"
+  | "literary"
+  | "punchy"
+  | "motivational";
 
-export type WritingLength = 'short' | 'medium' | 'long';
+export type WritingLength = "short" | "medium" | "long";
 
-export type CreationKind = 'draft' | 'message' | 'poster' | 'favourite';
+export type CreationKind = "draft" | "message" | "poster" | "favourite";
 
-export type TextAlignOption = 'right' | 'center' | 'left';
+export type TextAlignOption = "right" | "center" | "left";
 
 export type TemplateId =
-  | 'minimalist'
-  | 'editorial'
-  | 'statement'
-  | 'memorial'
-  | 'patriotic'
-  | 'geometric';
+  | "minimalist"
+  | "editorial"
+  | "statement"
+  | "memorial"
+  | "patriotic"
+  | "geometric";
 
 export interface TextContent {
   id: string;
   title: string;
   body: string;
-  category: ContentCategory | 'custom';
+  category: ContentCategory | "custom";
   source: ContentSource;
   createdAt: string;
   updatedAt: string;
@@ -85,9 +85,9 @@ export interface TemplateDefinition {
 }
 
 export interface UserPreferences {
-  theme: 'dark' | 'light';
-  language: 'fa';
-  defaultExportQuality: 'standard' | 'high';
+  theme: "dark" | "light";
+  language: "fa";
+  defaultExportQuality: "standard" | "high";
   defaultTone: WritingTone;
   defaultLength: WritingLength;
 }
@@ -98,28 +98,29 @@ export interface GenerateTextRequest {
   tone: WritingTone;
   length: WritingLength;
   existingText?: string;
+  useEmoji?: boolean;
 }
 
 export interface GenerateTextResult {
   text: string;
-  provider: 'remote' | 'local-fallback';
+  provider: "remote" | "local-fallback";
   warning?: string;
 }
 
 export const DEFAULT_CUSTOMISATION: PosterCustomisation = {
-  textAlign: 'right',
+  textAlign: "right",
   fontSizeScale: 1,
   showTitle: true,
   showSignature: false,
-  signature: '',
+  signature: "",
   backgroundVariant: 0,
   textColorVariant: 0,
 };
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  theme: 'dark',
-  language: 'fa',
-  defaultExportQuality: 'high',
-  defaultTone: 'epic',
-  defaultLength: 'medium',
+  theme: "dark",
+  language: "fa",
+  defaultExportQuality: "high",
+  defaultTone: "epic",
+  defaultLength: "medium",
 };

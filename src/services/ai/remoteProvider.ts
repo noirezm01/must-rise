@@ -1,10 +1,9 @@
-
 import type {
   GenerateTextRequest,
   GenerateTextResult,
-} from '../../types/models';
+} from "../../types/models";
 
-import type { AiTextProvider } from './types';
+import type { AiTextProvider } from "./types";
 
 function getConfig() {
   return {
@@ -15,20 +14,18 @@ function getConfig() {
 }
 
 export const remoteAiProvider: AiTextProvider = {
-  name: 'remote',
+  name: "remote",
 
   isAvailable() {
     const { endpoint, apiKey, model } = getConfig();
     return Boolean(endpoint && apiKey && model);
   },
 
-  async generate(
-    request: GenerateTextRequest
-  ): Promise<GenerateTextResult> {
+  async generate(request: GenerateTextRequest): Promise<GenerateTextResult> {
     const { endpoint, apiKey, model } = getConfig();
 
     if (!endpoint || !apiKey || !model) {
-      throw new Error('Groq configuration is incomplete');
+      throw new Error("Groq configuration is incomplete");
     }
 
     const controller = new AbortController();
@@ -36,18 +33,18 @@ export const remoteAiProvider: AiTextProvider = {
 
     try {
       const response = await fetch(
-        `${endpoint.replace(/\/+$/, '')}/chat/completions`,
+        `${endpoint.replace(/\/+$/, "")}/chat/completions`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
             model,
             messages: [
               {
-                role: 'system',
+                role: "system",
                 content: `You are Must Rise's Persian writing assistant.
 Write naturally and fluently in Persian.
 Respect the requested tone and length.
@@ -55,13 +52,11 @@ Avoid clichés and repetitive expressions.
 Preserve the user's intended meaning.`,
               },
               {
-                role: 'user',
+                role: "user",
                 content: `
-Topic: ${request.topic}
-Context: ${request.context}
-Tone: ${request.tone}
 Length: ${request.length}
-Existing text: ${request.existingText ?? 'None'}
+Use emojis: ${request.useEmoji ? "Yes, naturally" : "No"}
+Existing text: ${request.existingText ?? "None"}
 
 Write the requested Persian content.
 `,
@@ -70,7 +65,7 @@ Write the requested Persian content.
             temperature: 0.7,
           }),
           signal: controller.signal,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -83,12 +78,12 @@ Write the requested Persian content.
       const text = data.choices?.[0]?.message?.content?.trim();
 
       if (!text) {
-        throw new Error('Groq returned empty text');
+        throw new Error("Groq returned empty text");
       }
 
       return {
         text,
-        provider: 'remote',
+        provider: "remote",
       };
     } finally {
       clearTimeout(timeout);

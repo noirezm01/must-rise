@@ -1,41 +1,25 @@
 import type {
   GenerateTextRequest,
   GenerateTextResult,
-} from "../../types/models";
-import { localFallbackProvider } from "./localFallback";
-import { remoteAiProvider } from "./remoteProvider";
+} from '../../types/models';
+
+import { remoteAiProvider } from './remoteProvider';
 
 export async function generateText(
-  request: GenerateTextRequest,
+  request: GenerateTextRequest
 ): Promise<GenerateTextResult> {
-  const topic = request.topic.trim();
-  if (!topic && !request.existingText?.trim() && !request.context?.trim()) {
-    throw new Error("invalid_input");
+  if (!remoteAiProvider.isAvailable()) {
+    throw new Error('AI_NOT_CONFIGURED');
   }
 
-  if (remoteAiProvider.isAvailable()) {
-    try {
-      return await remoteAiProvider.generate(request);
-    } catch (error) {
-      console.error("GROQ API ERROR:", error);
-
-      const fallback = await localFallbackProvider.generate(request);
-      return {
-        ...fallback,
-        warning: "remote-failed",
-      };
-    }
+  try {
+    return await remoteAiProvider.generate(request);
+  } catch (error) {
+    console.error('AI API ERROR:', error);
+    throw new Error('AI_REQUEST_FAILED');
   }
-
-  const fallback = await localFallbackProvider.generate(request);
-  return {
-    ...fallback,
-    warning: "no-endpoint",
-  };
 }
 
 export function isRemoteAiConfigured(): boolean {
   return remoteAiProvider.isAvailable();
 }
-
-export { localFallbackProvider, remoteAiProvider };

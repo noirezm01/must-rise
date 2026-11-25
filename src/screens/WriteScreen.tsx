@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -6,52 +6,55 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Switch,
   View,
-} from 'react-native';
-import * as Clipboard from 'expo-clipboard';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  Button,
-  Chip,
-  Dialog,
-  Header,
-  Input,
-} from '../components/ui';
-import { useApp, useAppTheme } from '../context/AppContext';
-import { fa } from '../i18n/fa';
-import type { HomeStackParamList } from '../navigation/types';
-import { generateText, isRemoteAiConfigured } from '../services/ai';
-import { getText, saveText } from '../services/drafts';
-import { shareText } from '../services/sharing';
-import { spacing } from '../theme';
-import { textStyles } from '../theme/typography';
-import type { WritingLength, WritingTone } from '../types/models';
+} from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Button, Chip, Dialog, Header, Input } from "../components/ui";
+import { useApp, useAppTheme } from "../context/AppContext";
+import { fa } from "../i18n/fa";
+import type { HomeStackParamList } from "../navigation/types";
+import { generateText, isRemoteAiConfigured } from "../services/ai";
+import { getText, saveText } from "../services/drafts";
+import { shareText } from "../services/sharing";
+import { spacing } from "../theme";
+import { textStyles } from "../theme/typography";
+import type { WritingLength, WritingTone } from "../types/models";
 
 const TONES: WritingTone[] = [
-  'epic',
-  'formal',
-  'emotional',
-  'literary',
-  'punchy',
-  'motivational',
+  "epic",
+  "formal",
+  "emotional",
+  "literary",
+  "punchy",
+  "motivational",
 ];
-const LENGTHS: WritingLength[] = ['short', 'medium', 'long'];
+const LENGTHS: WritingLength[] = ["short", "long"];
 
-export function WriteScreen() {
+interface WriteScreenProps {
+  embedded?: boolean;
+}
+
+export function WriteScreen({ embedded = false }: WriteScreenProps) {
   const theme = useAppTheme();
   const { preferences, refreshCreations } = useApp();
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const route = useRoute<RouteProp<HomeStackParamList, 'Write'>>();
+  const route = useRoute<RouteProp<HomeStackParamList, "Write">>();
 
-  const [textId, setTextId] = useState<string | undefined>(route.params?.textId);
-  const [title, setTitle] = useState(route.params?.initialTitle ?? '');
-  const [topic, setTopic] = useState(route.params?.initialTitle ?? '');
-  const [context, setContext] = useState('');
-  const [body, setBody] = useState(route.params?.initialBody ?? '');
+  const [textId, setTextId] = useState<string | undefined>(
+    route.params?.textId,
+  );
+
+  const [topic, setTopic] = useState(route.params?.initialTitle ?? "");
+  const [useEmoji, setUseEmoji] = useState(false);
+  const [body, setBody] = useState(route.params?.initialBody ?? "");
   const [tone, setTone] = useState<WritingTone>(preferences.defaultTone);
-  const [length, setLength] = useState<WritingLength>(preferences.defaultLength);
+  const [length, setLength] = useState<WritingLength>(
+    preferences.defaultLength,
+  );
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -64,7 +67,6 @@ export function WriteScreen() {
       const existing = await getText(route.params.textId);
       if (!mounted || !existing) return;
       setTextId(existing.id);
-      setTitle(existing.title);
       setTopic(existing.title);
       setBody(existing.body);
       if (existing.tone) setTone(existing.tone);
@@ -76,7 +78,7 @@ export function WriteScreen() {
   }, [route.params?.textId]);
 
   const onGenerate = async () => {
-    if (!topic.trim() && !body.trim() && !context.trim()) {
+    if (!topic.trim()) {
       Alert.alert(fa.common.error, fa.common.required);
       return;
     }
@@ -84,20 +86,37 @@ export function WriteScreen() {
     setNotice(null);
     try {
       const result = await generateText({
-        topic: topic.trim() || title.trim() || 'برخاستن',
-        context: context.trim() || undefined,
+        topic: topic.trim(),
         tone,
         length,
-        existingText: body.trim() || undefined,
+        useEmoji,
       });
+
       setBody(result.text);
-      if (result.warning === 'no-endpoint') {
+      if (result.warning === "no-endpoint") {
         setNotice(fa.write.noEndpointNotice);
-      } else if (result.warning === 'remote-failed' || result.warning === 'local') {
+      } else if (
+        result.warning === "remote-failed" ||
+        result.warning === "local"
+      ) {
         setNotice(fa.write.localFallbackNotice);
       }
-    } catch {
-      Alert.alert(fa.common.error, fa.write.generateError);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message === "AI_NOT_CONFIGURED"
+          ? "سرویس هوش مصنوعی پیکربندی نشده است."
+          : "ارتباط با هوش مصنوعی برقرار نشد. لطفاً دوباره تلاش کنید.";
+
+      Alert.alert("خطا در تولید متن", message, [
+        {
+          text: "تلاش دوباره",
+          onPress: () => onGenerate(),
+        },
+        {
+          text: "بستن",
+          style: "cancel",
+        },
+      ]);
     } finally {
       setGenerating(false);
     }
@@ -112,10 +131,14 @@ export function WriteScreen() {
     try {
       const saved = await saveText({
         id: textId,
-        title: title.trim() || topic.trim() || 'پیش‌نویس',
+        title: topic.trim() || "پیش‌نویس",
         body: body.trim(),
-        category: route.params?.category ?? 'custom',
-        source: notice ? 'local-fallback' : isRemoteAiConfigured() ? 'ai' : 'user',
+        category: route.params?.category ?? "custom",
+        source: notice
+          ? "local-fallback"
+          : isRemoteAiConfigured()
+            ? "ai"
+            : "user",
         isFavourite: false,
         tone,
         length,
@@ -132,14 +155,19 @@ export function WriteScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <Header title={fa.write.title} onBack={() => navigation.goBack()} />
+      {!embedded && (
+        <Header title={fa.write.title} onBack={() => navigation.goBack()} />
+      )}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={8}
       >
         <ScrollView
-          contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xxl }}
+          contentContainerStyle={{
+            padding: spacing.md,
+            paddingBottom: spacing.xxl,
+          }}
           keyboardShouldPersistTaps="handled"
         >
           {!isRemoteAiConfigured() ? (
@@ -148,7 +176,7 @@ export function WriteScreen() {
                 textStyles.caption,
                 {
                   color: theme.textMuted,
-                  textAlign: 'right',
+                  textAlign: "right",
                   marginBottom: spacing.sm,
                 },
               ]}
@@ -158,31 +186,20 @@ export function WriteScreen() {
           ) : null}
 
           <Input
-            label={fa.write.titlePlaceholder}
-            value={title}
-            onChangeText={setTitle}
-          />
-          <View style={{ height: spacing.sm }} />
-          <Input
-            label={fa.write.topic}
+            label="موضوع نوشته"
             value={topic}
             onChangeText={setTopic}
-            placeholder={fa.write.topicPlaceholder}
-          />
-          <View style={{ height: spacing.sm }} />
-          <Input
-            label={fa.write.context}
-            value={context}
-            onChangeText={setContext}
-            placeholder={fa.write.contextPlaceholder}
-            multiline
-            multilineHeight={80}
+            placeholder="مثلاً امید، میهن، آزادی..."
           />
 
           <Text
             style={[
               textStyles.caption,
-              { color: theme.textMuted, textAlign: 'right', marginTop: spacing.md },
+              {
+                color: theme.textMuted,
+                textAlign: "right",
+                marginTop: spacing.md,
+              },
             ]}
           >
             {fa.write.tone}
@@ -201,7 +218,11 @@ export function WriteScreen() {
           <Text
             style={[
               textStyles.caption,
-              { color: theme.textMuted, textAlign: 'right', marginTop: spacing.sm },
+              {
+                color: theme.textMuted,
+                textAlign: "right",
+                marginTop: spacing.sm,
+              },
             ]}
           >
             {fa.write.length}
@@ -216,22 +237,45 @@ export function WriteScreen() {
               />
             ))}
           </View>
+          <View style={{ height: spacing.md }} />
+
+          <View style={styles.emojiRow}>
+            <Text style={[textStyles.body, { color: theme.text }]}>
+              استفاده از ایموجی
+            </Text>
+
+            <Switch
+              value={useEmoji}
+              onValueChange={setUseEmoji}
+              trackColor={{ true: theme.accent }}
+            />
+          </View>
 
           <View style={{ height: spacing.md }} />
-          <Input
-            label={fa.write.body}
-            value={body}
-            onChangeText={setBody}
-            placeholder={fa.write.bodyPlaceholder}
-            multiline
-            multilineHeight={180}
-          />
+          {body.trim().length > 0 && (
+            <>
+              <View style={{ height: spacing.md }} />
+
+              <Input
+                label={fa.write.body}
+                value={body}
+                onChangeText={setBody}
+                placeholder={fa.write.bodyPlaceholder}
+                multiline
+                multilineHeight={180}
+              />
+            </>
+          )}
 
           {notice ? (
             <Text
               style={[
                 textStyles.caption,
-                { color: theme.accent, textAlign: 'right', marginTop: spacing.sm },
+                {
+                  color: theme.accent,
+                  textAlign: "right",
+                  marginTop: spacing.sm,
+                },
               ]}
             >
               {notice}
@@ -245,14 +289,7 @@ export function WriteScreen() {
               loading={generating}
               fullWidth
             />
-            <Button
-              label={fa.write.saveDraft}
-              onPress={onSave}
-              loading={saving}
-              variant="secondary"
-              fullWidth
-              style={{ marginTop: spacing.sm }}
-            />
+
             <Button
               label={fa.common.copy}
               onPress={async () => {
@@ -274,25 +311,6 @@ export function WriteScreen() {
               fullWidth
               style={{ marginTop: spacing.sm }}
             />
-            <Button
-              label={fa.write.openPoster}
-              onPress={() =>
-                navigation.navigate('TemplatePicker', {
-                  initialText: body,
-                  initialHeadline: title || topic,
-                })
-              }
-              variant="secondary"
-              fullWidth
-              style={{ marginTop: spacing.sm }}
-            />
-            <Button
-              label={fa.common.clear}
-              onPress={() => setClearOpen(true)}
-              variant="ghost"
-              fullWidth
-              style={{ marginTop: spacing.sm }}
-            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -305,8 +323,7 @@ export function WriteScreen() {
         confirmLabel={fa.common.clear}
         onCancel={() => setClearOpen(false)}
         onConfirm={() => {
-          setBody('');
-          setContext('');
+          setBody("");
           setNotice(null);
           setClearOpen(false);
         }}
@@ -317,11 +334,17 @@ export function WriteScreen() {
 
 const styles = StyleSheet.create({
   chips: {
-    flexDirection: 'row-reverse',
-    flexWrap: 'wrap',
+    flexDirection: "row-reverse",
+    flexWrap: "wrap",
     marginTop: spacing.xs,
   },
   actions: {
     marginTop: spacing.lg,
+  },
+  emojiRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: spacing.md,
   },
 });
